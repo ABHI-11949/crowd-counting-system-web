@@ -1,0 +1,14 @@
+{
+    "timestamp": "20260203_145547",
+    "image_path": "image.png",
+    "total_count": 2,
+    "body_detections": 2,
+    "face_detections": 7,
+    "upper_body_detections": 0,
+    "density_level": "low",
+    "image_dimensions": [
+        316,
+        474
+    ],
+    "processing_time": 0.6194102764129639
+}

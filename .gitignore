@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.pyc
+
+# Virtual environment
+tfenv/
+
+# Outputs
+crowd_output/
+*.jpg
+*.png
+*.json
+
+# VS Code
+.vscode/
