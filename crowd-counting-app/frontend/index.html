@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CrowdSense AI - Crowd Counting System</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-users"></i>
+                <h1>CrowdSense AI</h1>
+            </div>
+            <div class="status-indicator">
+                <span class="status-dot" id="statusDot"></span>
+                <span id="statusText">Connecting...</span>
+            </div>
+        </header>
+        <div class="main-content">
+            
+            <div class="left-panel">
+                
+                <div class="upload-section">
+                    <div class="upload-header">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <h2>Upload Media</h2>
+                    </div>
+                    
+                    <div class="upload-options">
+                        <div class="upload-btn" id="uploadImageBtn">
+                            <i class="fas fa-image"></i>
+                            <span>Upload Image</span>
+                            <input type="file" id="imageUpload" class="file-input" accept="image/*">
+                        </div>
+                        
+                        <div class="upload-btn" id="uploadVideoBtn">
+                            <i class="fas fa-video"></i>
+                            <span>Upload Video</span>
+                            <input type="file" id="videoUpload" class="file-input" accept="video/*">
+                        </div>
+                        
+                        <div class="upload-btn" id="uploadBatchBtn">
+                            <i class="fas fa-folder"></i>
+                            <span>Batch Upload</span>
+                            <input type="file" id="batchUpload" class="file-input" accept="image/*" multiple>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Preview Section -->
+                <div class="preview-section">
+                    <div class="preview-header">
+                        <h3><i class="fas fa-eye"></i> Preview</h3>
+                        <span id="fileInfo">No file selected</span>
+                    </div>
+                    
+                    <div class="preview-container">
+                        <img id="previewImage" alt="Preview" style="display: none;">
+                        <div class="preview-placeholder">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Upload an image or video to preview</p>
+                            <p>Or drag and drop here</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel - Controls -->
+            <div class="right-panel">
+                <!-- Controls Card -->
+                <div class="controls-card">
+                    <h3><i class="fas fa-sliders-h"></i> Detection Controls</h3>
+                    
+                    <div class="control-group">
+                        <label for="confidenceSlider">
+                            <i class="fas fa-bullseye"></i> Confidence Threshold
+                        </label>
+                        <div class="slider-container">
+                            <input type="range" id="confidenceSlider" min="30" max="95" value="70">
+                            <span class="slider-value" id="confidenceValue">70%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="detectionMethod">
+                            <i class="fas fa-cogs"></i> Detection Method
+                        </label>
+                        <select id="detectionMethod" class="form-control">
+                            <option value="hog">HOG + SVM (Fast)</option>
+                            <option value="multi_scale">Multi-scale HOG (Accurate)</option>
+                            <option value="deep_learning">Deep Learning (Best)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label>
+                            <i class="fas fa-filter"></i> Detection Filters
+                        </label>
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <label>
+                                <input type="checkbox" id="filterBody" checked> Body Detection
+                            </label>
+                            <label>
+                                <input type="checkbox" id="filterFace" checked> Face Detection
+                            </label>
+                            <label>
+                                <input type="checkbox" id="filterUpperBody"> Upper Body Detection
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button id="processBtn" class="btn btn-primary" disabled>
+                            <i class="fas fa-play"></i> Process Image
+                        </button>
+                        <button id="processVideoBtn" class="btn btn-warning" disabled>
+                            <i class="fas fa-film"></i> Process Video
+                        </button>
+                        <button id="exportBtn" class="btn btn-success">
+                            <i class="fas fa-download"></i> Export Results
+                        </button>
+                        <button id="clearBtn" class="btn btn-danger">
+                            <i class="fas fa-trash"></i> Clear All
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Real-time Counting -->
+                <div class="realtime-section">
+                    <div class="realtime-header">
+                        <h3><i class="fas fa-video"></i> Real-time Counting</h3>
+                    </div>
+                    
+                    <div class="realtime-container">
+                        <video id="realtimeVideo" autoplay style="display: none;"></video>
+                        <div class="realtime-overlay">
+                            <span id="realtimeCount">0</span> people detected
+                        </div>
+                    </div>
+                    
+                    <div class="realtime-controls">
+                        <button id="startRealtimeBtn" class="btn btn-primary">
+                            <i class="fas fa-play"></i> Start Camera
+                        </button>
+                        <button id="stopRealtimeBtn" class="btn btn-danger" disabled>
+                            <i class="fas fa-stop"></i> Stop Camera
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="results-section" style="display: none;">
+            <div class="results-header">
+                <h3><i class="fas fa-chart-bar"></i> Analysis Results</h3>
+                <span id="resultsTimestamp"></span>
+            </div>
+            
+            <div class="results-grid">
+                <div class="result-box">
+                    <div class="result-value" id="totalCount">0</div>
+                    <div class="result-label">Total Count</div>
+                </div>
+                
+                <div class="result-box">
+                    <div class="result-value" id="bodyCount">0</div>
+                    <div class="result-label">Body Detections</div>
+                </div>
+                
+                <div class="result-box">
+                    <div class="result-value" id="faceCount">0</div>
+                    <div class="result-label">Face Detections</div>
+                </div>
+            </div>
+            
+            <div class="density-indicator">
+                Density Level: <span id="densityLevel">LOW</span>
+            </div>
+            
+            <div class="result-images">
+                <div>
+                    <h4><i class="fas fa-image"></i> Detection Result</h4>
+                    <div class="result-image-container">
+                        <img id="resultImage" class="result-image" alt="Detection Result" style="display: none;">
+                    </div>
+                </div>
+                
+                <div>
+                    <h4><i class="fas fa-fire"></i> Density Heatmap</h4>
+                    <div class="result-image-container">
+                        <img id="heatmapImage" class="result-image" alt="Heatmap" style="display: none;">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Crowd-counting-app 2026 | Real-time Crowd Counting System</p>
+            <p>Using OpenCV, TensorFlow.js, and Flask Backend and used html and css and js</p>
+        </footer>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <h3>Processing...</h3>
+            <p>Please wait while we analyze the crowd</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.socket.io/4.6.0/socket.io.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
